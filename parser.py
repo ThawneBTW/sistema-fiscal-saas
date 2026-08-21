@@ -15,7 +15,10 @@ class RelatorioParser:
     def extrair_dados(self):
         return {
             "empresa": self._extrair_empresa(),
-            "pendencias": self._extrair_pendencias()
+            "socios": self._extrair_socios(),
+            "pendencias": self._extrair_pendencias(),
+            "certidoes": self._extrair_certidoes(),
+            "pgfn": self._extrair_pgfn()
         }
 
     def _extrair_empresa(self):
@@ -26,10 +29,25 @@ class RelatorioParser:
             dados['razao_social'] = cnpj_busca.group(2).strip()
             
         sit_busca = re.search(r'Situação:\s*([A-Z]+)', self.texto)
-        if sit_busca:
-            dados['situacao'] = sit_busca.group(1).strip()
-            
+        if sit_busca: dados['situacao'] = sit_busca.group(1).strip()
+        
+        porte = re.search(r'Porte da Empresa:\s*(.+)', self.texto)
+        if porte: dados['porte'] = porte.group(1).strip()
+        
         return dados
+
+    def _extrair_socios(self):
+        socios = []
+        if "Sócios e Administradores" in self.texto:
+            # Captura o padrão de CPF/CNPJ, Nome e Qualificação
+            matches = re.finditer(r'([\d\.\-]+)\n\s*\|\s*Nome\n(.+?)\n\s*\|\s*Qualificação\n(.+?)\n', self.texto)
+            for match in matches:
+                socios.append({
+                    "documento": match.group(1).strip(),
+                    "nome": match.group(2).strip(),
+                    "qualificacao": match.group(3).strip()
+                })
+        return socios
 
     def _extrair_pendencias(self):
         pendencias = []
@@ -43,3 +61,21 @@ class RelatorioParser:
                     "status": "Pendente"
                 })
         return pendencias
+
+    def _extrair_certidoes(self):
+        certidoes = []
+        if "Certidão Emitida" in self.texto:
+            cert = re.search(r'Certidão (.*?):\s*([A-Z0-9\.]+)\nEmissão:\s*([\d/]+)\nData de Validade:\s*([\d/]+)', self.texto)
+            if cert:
+                certidoes.append({
+                    "tipo": f"Certidão {cert.group(1).strip()}",
+                    "codigo": cert.group(2).strip(),
+                    "emissao": cert.group(3).strip(),
+                    "validade": cert.group(4).strip()
+                })
+        return certidoes
+
+    def _extrair_pgfn(self):
+        if "Não foram detectadas pendências" in self.texto:
+            return {"status": "Sem pendências detectadas na PGFN", "possui_pendencias": False}
+        return {"status": "Pendências detectadas na PGFN", "possui_pendencias": True}

@@ -3,38 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processador Fiscal SaaS</title>
+    <title>SaaS | Situação Fiscal</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-800">
-    <header class="bg-white shadow-sm py-4 px-8 mb-8 flex justify-between items-center">
-        <h1 class="text-xl font-bold text-blue-600">Sistema Fiscal Inteligente</h1>
-    </header>
+<body class="bg-slate-50 flex h-screen text-slate-800 font-sans">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r shadow-sm hidden md:block">
+        <div class="p-6 border-b text-xl font-bold text-blue-600">Fiscal.io</div>
+        <nav class="p-4 space-y-2">
+            <a href="#" class="block px-4 py-2 bg-blue-50 text-blue-700 rounded-lg font-semibold">Dashboard</a>
+            <a href="#" class="block px-4 py-2 text-slate-500 hover:bg-slate-50 rounded-lg">Empresas</a>
+        </nav>
+    </aside>
 
-    <main class="max-w-4xl mx-auto px-4">
-        <div class="bg-white rounded-xl shadow-sm p-8 text-center border border-dashed border-gray-300">
-            <h2 class="text-lg font-medium mb-4">Novo Relatório</h2>
-            <p class="text-gray-500 mb-6">Arraste seu PDF ou clique abaixo</p>
-            
-            <input type="file" id="arquivoPdf" accept=".pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
-            
-            <button onclick="enviarPDF()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Processar Documento</button>
-        </div>
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-y-auto">
+        <header class="bg-white p-6 shadow-sm border-b flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Processador de Relatórios</h1>
+        </header>
 
-        <div id="resultado" class="mt-8 hidden">
-            <h3 class="font-bold text-lg mb-4 border-b pb-2">Resultado Extraído</h3>
-            <pre id="dadosExtraidos" class="bg-gray-900 text-green-400 p-4 rounded-lg text-sm overflow-x-auto mb-4"></pre>
-            <a id="btnBaixar" href="#" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 inline-block transition">📥 Baixar Excel Completo</a>
+        <div class="p-8 max-w-5xl mx-auto w-full">
+            <!-- Upload Area -->
+            <div class="bg-white p-10 rounded-xl shadow-sm border-2 border-dashed border-slate-300 text-center hover:border-blue-500 transition mb-8">
+                <h2 class="text-lg font-semibold mb-2">Enviar Relatório Fiscal</h2>
+                <p class="text-slate-500 mb-6">Faça upload do PDF da Receita Federal para extração automática.</p>
+                <input type="file" id="arquivoPdf" accept=".pdf" class="hidden">
+                <button onclick="document.getElementById('arquivoPdf').click()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Selecionar PDF</button>
+                <button onclick="enviarPDF()" class="ml-2 bg-emerald-500 text-white px-6 py-2 rounded-lg hover:bg-emerald-600">Processar</button>
+            </div>
+
+            <!-- Dashboard de Resultados -->
+            <div id="resultado" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold">Resumo Extraído</h3>
+                    <a id="btnBaixar" href="#" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-emerald-700 shadow-sm">📥 Baixar Excel</a>
+                </div>
+
+                <!-- Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                        <p class="text-sm text-slate-500 font-medium">Razão Social</p>
+                        <p id="resRazao" class="text-lg font-bold mt-1 text-slate-700">-</p>
+                        <p id="resCnpj" class="text-sm text-slate-400 mt-1">-</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-500">
+                        <p class="text-sm text-slate-500 font-medium">Pendências</p>
+                        <p id="resPendencias" class="text-2xl font-bold mt-1 text-slate-700">0</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
+                        <p class="text-sm text-slate-500 font-medium">PGFN</p>
+                        <p id="resPgfn" class="text-sm font-bold mt-1 text-slate-700">-</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
     <script>
         async function enviarPDF() {
             const input = document.getElementById('arquivoPdf');
-            if (input.files.length === 0) {
-                alert('Selecione um PDF primeiro.');
-                return;
-            }
+            if (input.files.length === 0) return alert('Selecione um PDF primeiro.');
 
             const formData = new FormData();
             formData.append('file', input.files[0]);
@@ -44,9 +73,12 @@
                 const json = await response.json();
                 
                 document.getElementById('resultado').classList.remove('hidden');
-                document.getElementById('dadosExtraidos').textContent = JSON.stringify(json.dados, null, 2);
-                document.getElementById('btnBaixar').href = json.excel_url;
+                document.getElementById('resRazao').textContent = json.dados.empresa.razao_social || 'N/A';
+                document.getElementById('resCnpj').textContent = json.dados.empresa.cnpj || 'N/A';
+                document.getElementById('resPendencias').textContent = json.dados.pendencias.length;
+                document.getElementById('resPgfn').textContent = json.dados.pgfn.status;
                 
+                document.getElementById('btnBaixar').href = json.excel_url;
             } catch (error) {
                 alert('Erro ao processar o arquivo.');
             }
