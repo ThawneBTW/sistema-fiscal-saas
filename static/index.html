@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaaS | Dashboard Fiscal Profissional</title>
+    <title>SaaS | Auditoria Fiscal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
-                    colors: { 
-                        brand: { 50: '#eef2ff', 100: '#e0e7ff', 500: '#6366f1', 600: '#4f46e5', 900: '#312e81' },
-                        darkbg: '#0f172a', 
-                        darkcard: '#1e293b' 
+                    colors: {
+                        brand: { 500: '#10b981', 600: '#059669' }, // Emerald theme
+                        darkbg: '#09090b', // Zinc 950 (Preto real)
+                        darkcard: '#18181b', // Zinc 900
+                        darkborder: '#27272a' // Zinc 800
                     },
                     animation: {
-                        'fade-in-up': 'fadeInUp 0.5s ease-out',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
                     },
                     keyframes: {
-                        fadeInUp: {
-                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
                         }
                     }
@@ -30,148 +30,152 @@
         }
     </script>
     <style>
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .dark .glass-panel {
-            background: rgba(30, 41, 59, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        ::-webkit-scrollbar { width: 8px; }
+        /* Customizações refinadas */
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        ::-webkit-scrollbar-thumb { background: #d4d4d8; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #3f3f46; }
+        
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+        }
+        .dark .glass-header {
+            background: rgba(9, 9, 11, 0.7);
+            backdrop-filter: blur(16px);
+            border-bottom-color: #27272a;
+        }
     </style>
 </head>
-<body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300 flex h-screen overflow-hidden selection:bg-brand-500 selection:text-white">
+<body class="bg-zinc-50 dark:bg-darkbg text-zinc-900 dark:text-zinc-100 transition-colors duration-300 flex h-screen overflow-hidden selection:bg-brand-500 selection:text-white antialiased">
     
-    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
-        <div class="absolute top-1/2 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1.5s;"></div>
-    </div>
-
-    <!-- Sidebar Lateral -->
-    <aside class="w-20 md:w-64 glass-panel border-r shadow-2xl flex flex-col transition-all duration-300 z-20">
-        <div class="h-20 flex items-center justify-center md:justify-start md:px-8 border-b dark:border-slate-700/50">
-            <div class="w-10 h-10 bg-gradient-to-br from-brand-500 to-purple-600 rounded-xl shadow-lg flex items-center justify-center text-white font-bold text-xl">F</div>
-            <h1 class="hidden md:block ml-3 text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-purple-600">Fiscal.io</h1>
+    <!-- Sidebar -->
+    <aside class="w-20 md:w-64 bg-white dark:bg-darkbg border-r border-zinc-200 dark:border-darkborder flex flex-col transition-all duration-300 z-20">
+        <div class="h-16 flex items-center justify-center md:justify-start md:px-6 border-b border-zinc-200 dark:border-darkborder">
+            <div class="w-8 h-8 bg-zinc-900 dark:bg-white rounded-lg flex items-center justify-center text-white dark:text-zinc-900 font-bold text-lg shadow-sm">F</div>
+            <h1 class="hidden md:block ml-3 text-xl font-bold tracking-tight">Fiscal.io</h1>
         </div>
         
-        <nav class="flex-1 p-4 space-y-2 mt-4">
-            <button onclick="mudarAba('dashboard')" id="btn-dashboard" class="w-full flex items-center p-3 md:px-4 md:py-3 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl font-bold transition-all group shadow-sm">
-                <svg class="w-6 h-6 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+        <nav class="flex-1 p-3 space-y-1 mt-2">
+            <button onclick="mudarAba('dashboard')" id="btn-dashboard" class="w-full flex items-center p-3 md:px-3 md:py-2.5 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-900 dark:text-white rounded-md font-medium transition-all group">
+                <svg class="w-5 h-5 md:mr-3 text-zinc-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                 <span class="hidden md:block">Auditoria (RFB)</span>
             </button>
             
-            <button onclick="mudarAba('empresas')" id="btn-empresas" class="w-full flex items-center p-3 md:px-4 md:py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl font-semibold transition-all group">
-                <svg class="w-6 h-6 md:mr-3 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                <span class="hidden md:block group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">Base de Dados</span>
+            <button onclick="mudarAba('empresas')" id="btn-empresas" class="w-full flex items-center p-3 md:px-3 md:py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/30 rounded-md font-medium transition-all group">
+                <svg class="w-5 h-5 md:mr-3 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                <span class="hidden md:block">Base de Dados</span>
             </button>
         </nav>
     </aside>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main class="flex-1 flex flex-col relative z-10">
-        <header class="h-20 glass-panel border-b dark:border-slate-700/50 flex justify-between items-center px-8 shadow-sm">
-            <h2 class="text-xl font-bold tracking-tight" id="titulo-pagina">Visão Geral</h2>
-            <div class="flex items-center gap-4">
-                <button onclick="toggleTheme()" class="p-2.5 bg-white dark:bg-slate-800 rounded-full shadow-sm hover:shadow-md border border-slate-100 dark:border-slate-700 transition-all">
-                    <span id="theme-icon" class="text-lg leading-none">🌙</span>
-                </button>
-            </div>
+        
+        <header class="h-16 glass-header border-b border-zinc-200 flex justify-between items-center px-6 sticky top-0 z-10">
+            <h2 class="text-lg font-semibold tracking-tight" id="titulo-pagina">Visão Geral</h2>
+            <button onclick="toggleTheme()" class="p-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                <svg id="icon-moon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                <svg id="icon-sun" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            </button>
         </header>
 
-        <div class="p-6 md:p-10 overflow-y-auto h-full w-full max-w-7xl mx-auto">
+        <div class="p-6 md:p-10 overflow-y-auto h-full w-full max-w-5xl mx-auto">
             
-            <!-- TELA 1: DASHBOARD / UPLOAD -->
-            <div id="view-dashboard" class="animate-fade-in-up space-y-8">
-                <div class="glass-panel p-10 md:p-16 rounded-3xl shadow-xl border border-white/50 text-center relative overflow-hidden group">
-                    <div class="absolute -right-20 -top-20 w-64 h-64 bg-gradient-to-br from-brand-400/20 to-purple-400/20 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
+            <!-- TELA 1: DASHBOARD -->
+            <div id="view-dashboard" class="space-y-6 animate-fade-in">
+                
+                <!-- Card de Upload Minimalista -->
+                <div class="bg-white dark:bg-darkcard border border-zinc-200 dark:border-darkborder rounded-xl p-8 md:p-12 text-center shadow-sm">
+                    <div class="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6 text-zinc-600 dark:text-zinc-400">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
                     
-                    <div class="relative z-10 max-w-lg mx-auto space-y-6">
-                        <div class="w-20 h-20 bg-brand-50 dark:bg-brand-900/30 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 transform group-hover:-translate-y-2 transition-transform duration-500 shadow-inner">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        </div>
+                    <h3 class="text-2xl font-bold tracking-tight mb-2">Auditoria de Relatórios</h3>
+                    <p class="text-zinc-500 dark:text-zinc-400 mb-8 max-w-lg mx-auto">Faça o upload do Relatório de Situação Fiscal. O sistema fará a varredura de débitos, multas e consolidará os valores automaticamente.</p>
+                    
+                    <input type="file" id="arquivoPdf" accept=".pdf" class="hidden">
+                    
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <button onclick="document.getElementById('arquivoPdf').click()" class="px-5 py-2.5 rounded-md text-sm font-medium text-zinc-700 dark:text-zinc-300 bg-white dark:bg-darkcard border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                            Selecionar PDF
+                        </button>
                         
-                        <h3 class="text-3xl font-bold tracking-tight">Processamento Tributário Automático</h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-lg">Selecione o PDF Fiscal. Extraímos valores detalhados (Principal, Multa, Juros) e organizamos tudo em tabelas precisas.</p>
-                        
-                        <input type="file" id="arquivoPdf" accept=".pdf" class="hidden">
-                        
-                        <div class="bg-white/50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <button onclick="document.getElementById('arquivoPdf').click()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 shadow-sm border border-slate-200 dark:border-slate-600 transition-all flex items-center justify-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                                Procurar PDF
-                            </button>
-                            
-                            <div class="flex-1 flex flex-col items-center sm:items-start overflow-hidden w-full">
-                                <span id="nome-arquivo" class="text-sm font-medium text-slate-400 truncate w-full text-center sm:text-left">Nenhum documento anexado</span>
-                            </div>
-
-                            <button onclick="enviarPDF()" id="btn-processar" class="w-full sm:w-auto bg-gradient-to-r from-brand-600 to-purple-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-brand-500/30 hover:shadow-brand-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                                <span id="texto-btn-processar">Auditar Relatório</span>
-                                <svg id="spinner" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            </button>
-                        </div>
+                        <button onclick="enviarPDF()" id="btn-processar" class="px-5 py-2.5 rounded-md text-sm font-medium text-white bg-zinc-900 dark:bg-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors flex items-center gap-2 shadow-sm">
+                            <span id="texto-btn-processar">Processar Documento</span>
+                            <svg id="spinner" class="animate-spin w-4 h-4 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <span id="nome-arquivo" class="text-sm font-medium text-zinc-400">Nenhum arquivo anexado</span>
                     </div>
                 </div>
 
-                <!-- Painel de Resultados -->
-                <div id="resultado" class="hidden animate-fade-in-up">
-                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-2 h-8 bg-emerald-500 rounded-full"></div>
-                            <h3 class="text-2xl font-bold tracking-tight">Síntese Financeira</h3>
-                        </div>
-                        <a id="btnBaixar" href="#" class="bg-emerald-500 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 hover:-translate-y-1 transition-all flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Exportar Planilha Completa
+                <!-- Painel de Resultados (Limpo e Direto) -->
+                <div id="resultado" class="hidden animate-fade-in space-y-6">
+                    <div class="flex justify-between items-center border-b border-zinc-200 dark:border-darkborder pb-4">
+                        <h3 class="text-lg font-semibold tracking-tight">Diagnóstico Final</h3>
+                        <a id="btnBaixar" href="#" class="text-sm font-medium text-brand-600 dark:text-brand-500 hover:text-brand-700 flex items-center gap-1.5 transition-colors">
+                            Exportar Planilha Completa &rarr;
                         </a>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-brand-500">
-                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Identificação</p>
-                            <p id="resRazao" class="text-xl font-bold text-slate-800 dark:text-white line-clamp-2 leading-tight mt-2">-</p>
-                            <p id="resCnpj" class="text-sm font-mono text-brand-600 dark:text-brand-400 mt-1">-</p>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         
-                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-amber-500">
-                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Registros RFB / PGFN</p>
-                            <div class="flex items-baseline gap-2 mt-2">
-                                <p id="resRfb" class="text-4xl font-black text-amber-500">0</p>
-                                <p class="text-sm font-medium text-slate-500 mr-2">Ocorrências</p>
+                        <!-- Dados Empresa -->
+                        <div class="bg-white dark:bg-darkcard border border-zinc-200 dark:border-darkborder p-5 rounded-xl shadow-sm md:col-span-3 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div>
+                                <p class="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-1">Empresa Auditada</p>
+                                <p id="resRazao" class="text-lg font-bold text-zinc-900 dark:text-white leading-tight">-</p>
+                                <p id="resCnpj" class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 font-mono">-</p>
+                            </div>
+                            <div class="text-left md:text-right">
+                                <span id="resPorte" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700">
+                                    -
+                                </span>
                             </div>
                         </div>
-
-                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-rose-600 col-span-1 md:col-span-2">
-                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Saldo Devedor Estimado (Atraso + Consolidado)</p>
-                            <p id="resValorTotal" class="text-4xl font-black text-rose-600 mt-2 tracking-tight">R$ 0,00</p>
-                            <p class="text-xs text-slate-400 mt-1">*Soma automática das guias e atrasos lidos no documento.</p>
+                        
+                        <!-- Volume RFB -->
+                        <div class="bg-white dark:bg-darkcard border border-zinc-200 dark:border-darkborder p-5 rounded-xl shadow-sm">
+                            <p class="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">Apontamentos RFB</p>
+                            <p id="resRfb" class="text-3xl font-light text-zinc-900 dark:text-white">0</p>
                         </div>
+
+                        <!-- Volume PGFN -->
+                        <div class="bg-white dark:bg-darkcard border border-zinc-200 dark:border-darkborder p-5 rounded-xl shadow-sm">
+                            <p class="text-xs font-medium text-zinc-500 uppercase tracking-wider mb-2">Inscrições PGFN</p>
+                            <p id="resPgfn" class="text-3xl font-light text-zinc-900 dark:text-white">0</p>
+                        </div>
+
+                        <!-- Dívida Total Estimada -->
+                        <div class="bg-white dark:bg-darkcard border border-rose-200 dark:border-rose-900/50 p-5 rounded-xl shadow-sm relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-3">
+                                <span class="w-2 h-2 rounded-full bg-rose-500 inline-block animate-pulse"></span>
+                            </div>
+                            <p class="text-xs font-medium text-rose-600 dark:text-rose-500 uppercase tracking-wider mb-2">Total Estimado</p>
+                            <p id="resValorTotal" class="text-2xl md:text-3xl font-semibold text-zinc-900 dark:text-white tracking-tight">R$ 0,00</p>
+                        </div>
+
                     </div>
                 </div>
             </div>
 
             <!-- TELA 2: EMPRESAS -->
-            <div id="view-empresas" class="hidden animate-fade-in-up">
-                <div class="glass-panel rounded-3xl shadow-xl overflow-hidden min-h-[60vh] flex flex-col">
-                    <div class="p-6 md:px-8 border-b dark:border-slate-700/50 flex justify-between items-center bg-white/50 dark:bg-slate-800/50">
-                        <h3 class="text-xl font-bold">Banco de Dados - Supabase</h3>
-                        <button class="bg-white dark:bg-slate-700 text-sm px-4 py-2 rounded-lg font-semibold border border-slate-200 dark:border-slate-600 shadow-sm hover:bg-slate-50 transition-colors flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            Sincronizar Dados
+            <div id="view-empresas" class="hidden animate-fade-in">
+                <div class="bg-white dark:bg-darkcard border border-zinc-200 dark:border-darkborder rounded-xl shadow-sm overflow-hidden min-h-[50vh] flex flex-col">
+                    <div class="p-5 border-b border-zinc-200 dark:border-darkborder flex justify-between items-center bg-zinc-50/50 dark:bg-zinc-800/20">
+                        <h3 class="text-base font-semibold">Registros Salvos</h3>
+                        <button class="text-xs font-medium px-3 py-1.5 rounded bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                            Sincronizar
                         </button>
                     </div>
-                    <div class="flex-1 flex flex-col items-center justify-center p-12 text-center">
-                        <div class="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
-                            <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
-                        </div>
-                        <h4 class="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">Seus registros estão seguros</h4>
-                        <p class="text-slate-500 max-w-md">O painel de gestão visual será alimentado com os dados processados e gravados em tempo real na nuvem do Supabase.</p>
+                    <div class="flex-1 flex flex-col items-center justify-center p-8 text-center">
+                        <svg class="w-10 h-10 text-zinc-300 dark:text-zinc-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400">Banco de dados conectado.<br>Os relatórios processados aparecerão aqui em breve.</p>
                     </div>
                 </div>
             </div>
@@ -179,35 +183,40 @@
         </div>
     </main>
 
-    <div id="toast" class="fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-2xl transform translate-y-24 opacity-0 transition-all duration-500 z-50 font-bold flex items-center gap-3 backdrop-blur-md border">
+    <!-- Toasts Minimalistas -->
+    <div id="toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-lg shadow-lg transform translate-y-12 opacity-0 transition-all duration-300 font-medium text-sm z-50 flex items-center gap-2 border">
         <span id="toast-icon"></span>
         <span id="toast-msg"></span>
     </div>
 
     <script>
+        // Inicializa o tema baseado na preferência do sistema
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('icon-moon').classList.remove('hidden');
+            document.getElementById('icon-sun').classList.add('hidden');
+        }
+
         function mudarAba(aba) {
             document.getElementById('view-dashboard').classList.add('hidden');
             document.getElementById('view-empresas').classList.add('hidden');
             
-            document.getElementById('btn-dashboard').className = 'w-full flex items-center p-3 md:px-4 md:py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl font-semibold transition-all group';
-            document.getElementById('btn-empresas').className = 'w-full flex items-center p-3 md:px-4 md:py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl font-semibold transition-all group';
+            document.getElementById('btn-dashboard').className = 'w-full flex items-center p-3 md:px-3 md:py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/30 rounded-md font-medium transition-all group';
+            document.getElementById('btn-empresas').className = 'w-full flex items-center p-3 md:px-3 md:py-2.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800/30 rounded-md font-medium transition-all group';
 
             document.getElementById(`view-${aba}`).classList.remove('hidden');
-            document.getElementById(`btn-${aba}`).className = 'w-full flex items-center p-3 md:px-4 md:py-3 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl font-bold transition-all group shadow-sm';
+            document.getElementById(`btn-${aba}`).className = 'w-full flex items-center p-3 md:px-3 md:py-2.5 bg-zinc-100 dark:bg-zinc-800/50 text-zinc-900 dark:text-white rounded-md font-medium transition-all group';
             
             document.getElementById('titulo-pagina').innerText = aba === 'dashboard' ? 'Visão Geral' : 'Base de Dados';
         }
 
         function toggleTheme() {
             const html = document.documentElement;
-            const icon = document.getElementById('theme-icon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                icon.innerText = '🌙';
-            } else {
-                html.classList.add('dark');
-                icon.innerText = '☀️';
-            }
+            html.classList.toggle('dark');
+            
+            const isDark = html.classList.contains('dark');
+            document.getElementById('icon-sun').classList.toggle('hidden', !isDark);
+            document.getElementById('icon-moon').classList.toggle('hidden', isDark);
         }
 
         function showToast(msg, tipo = 'sucesso') {
@@ -218,15 +227,15 @@
             toastMsg.innerText = msg;
             
             if(tipo === 'erro') {
-                toast.className = "fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-2xl transition-all duration-500 z-50 font-bold flex items-center gap-3 backdrop-blur-md border border-rose-500/30 bg-rose-500/90 text-white";
-                toastIcon.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+                toast.className = "fixed bottom-6 right-6 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 font-medium text-sm z-50 flex items-center gap-2 border border-red-200 dark:border-red-900 bg-white dark:bg-zinc-900 text-red-600 dark:text-red-400";
+                toastIcon.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
             } else {
-                toast.className = "fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-2xl transition-all duration-500 z-50 font-bold flex items-center gap-3 backdrop-blur-md border border-emerald-500/30 bg-emerald-500/90 text-white";
-                toastIcon.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+                toast.className = "fixed bottom-6 right-6 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 font-medium text-sm z-50 flex items-center gap-2 border border-zinc-200 dark:border-darkborder bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white";
+                toastIcon.innerHTML = '<svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
             }
             
-            toast.classList.remove('translate-y-24', 'opacity-0');
-            setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 4000);
+            toast.classList.remove('translate-y-12', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-12', 'opacity-0'), 4000);
         }
 
         const inputPdf = document.getElementById('arquivoPdf');
@@ -234,9 +243,9 @@
 
         inputPdf.addEventListener('change', function(e) {
             if (e.target.files.length > 0) {
-                nomeArquivoBox.innerHTML = `<span class="text-brand-600 dark:text-brand-400 font-bold flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${e.target.files[0].name} anexado</span>`;
+                nomeArquivoBox.innerHTML = `<span class="text-zinc-900 dark:text-white flex items-center justify-center gap-1.5"><svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${e.target.files[0].name}</span>`;
             } else {
-                nomeArquivoBox.innerHTML = 'Nenhum documento anexado';
+                nomeArquivoBox.innerHTML = 'Nenhum arquivo anexado';
             }
         });
 
@@ -247,10 +256,10 @@
             const textoBtn = document.getElementById('texto-btn-processar');
             const spinner = document.getElementById('spinner');
 
-            textoBtn.innerText = 'Auditando...';
+            textoBtn.innerText = 'Processando...';
             spinner.classList.remove('hidden');
             btnProcessar.disabled = true;
-            btnProcessar.classList.add('opacity-75', 'cursor-wait');
+            btnProcessar.classList.add('opacity-80', 'cursor-not-allowed');
 
             const formData = new FormData();
             formData.append('file', inputPdf.files[0]);
@@ -261,7 +270,6 @@
                 
                 if (json.error) throw new Error(json.error);
 
-                // Cálculo de dívida robusto
                 let dividaTotal = 0;
                 json.dados.pendencias.forEach(p => {
                     if (p.vl_consolidado && p.vl_consolidado !== '-' && p.vl_consolidado !== 'Consultar') {
@@ -271,27 +279,29 @@
                 });
                 
                 document.getElementById('resultado').classList.remove('hidden');
-                document.getElementById('resRazao').textContent = json.dados.empresa.razao_social || 'NÃO IDENTIFICADO';
+                document.getElementById('resRazao').textContent = json.dados.empresa.razao_social || 'Razão Social não encontrada';
                 document.getElementById('resCnpj').textContent = json.dados.empresa.cnpj || '-';
+                document.getElementById('resPorte').textContent = json.dados.empresa.porte || 'N/A';
                 
                 const qtdRfb = json.dados.pendencias ? json.dados.pendencias.length : 0;
                 const qtdPgfn = json.dados.pgfn ? json.dados.pgfn.length : 0;
                 
-                document.getElementById('resRfb').textContent = qtdRfb + qtdPgfn;
+                document.getElementById('resRfb').textContent = qtdRfb;
+                document.getElementById('resPgfn').textContent = qtdPgfn;
                 document.getElementById('resValorTotal').textContent = dividaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
                 
                 document.getElementById('btnBaixar').href = json.excel_url;
                 
-                showToast('Auditoria e Extração concluídas!');
+                showToast('Relatório processado com sucesso');
                 
             } catch (error) {
                 console.error(error);
-                showToast(`Falha: ${error.message}`, 'erro');
+                showToast(error.message, 'erro');
             } finally {
-                textoBtn.innerText = 'Auditar Relatório';
+                textoBtn.innerText = 'Processar Documento';
                 spinner.classList.add('hidden');
                 btnProcessar.disabled = false;
-                btnProcessar.classList.remove('opacity-75', 'cursor-wait');
+                btnProcessar.classList.remove('opacity-80', 'cursor-not-allowed');
             }
         }
     </script>
