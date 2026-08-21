@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processador Fiscal SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <header class="bg-white shadow-sm py-4 px-8 mb-8 flex justify-between items-center">
+        <h1 class="text-xl font-bold text-blue-600">Sistema Fiscal Inteligente</h1>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4">
+        <div class="bg-white rounded-xl shadow-sm p-8 text-center border border-dashed border-gray-300">
+            <h2 class="text-lg font-medium mb-4">Novo Relatório</h2>
+            <p class="text-gray-500 mb-6">Arraste seu PDF ou clique abaixo</p>
+            
+            <input type="file" id="arquivoPdf" accept=".pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+            
+            <button onclick="enviarPDF()" class="mt-6 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">Processar Documento</button>
+        </div>
+
+        <div id="resultado" class="mt-8 hidden">
+            <h3 class="font-bold text-lg mb-4 border-b pb-2">Resultado Extraído</h3>
+            <pre id="dadosExtraidos" class="bg-gray-900 text-green-400 p-4 rounded-lg text-sm overflow-x-auto mb-4"></pre>
+            <a id="btnBaixar" href="#" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 inline-block transition">📥 Baixar Excel Completo</a>
+        </div>
+    </main>
+
+    <script>
+        async function enviarPDF() {
+            const input = document.getElementById('arquivoPdf');
+            if (input.files.length === 0) {
+                alert('Selecione um PDF primeiro.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', input.files[0]);
+
+            try {
+                const response = await fetch('/upload', { method: 'POST', body: formData });
+                const json = await response.json();
+                
+                document.getElementById('resultado').classList.remove('hidden');
+                document.getElementById('dadosExtraidos').textContent = JSON.stringify(json.dados, null, 2);
+                document.getElementById('btnBaixar').href = json.excel_url;
+                
+            } catch (error) {
+                alert('Erro ao processar o arquivo.');
+            }
+        }
+    </script>
+</body>
+</html>
