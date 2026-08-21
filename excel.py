@@ -1,5 +1,6 @@
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from openpyxl.utils import get_column_letter
 
 def converter_para_numero(valor_str):
     if not valor_str or valor_str in ("-", "Consultar", "Ver Detalhes", ""): return 0.0
@@ -19,18 +20,22 @@ def estilizar_cabecalho(ws, headers, linha=3):
         cell.alignment = Alignment(horizontal="center", vertical="center")
     
     ws.freeze_panes = f"A{linha+1}"
-    ws.auto_filter.ref = f"A{linha}:{openpyxl.utils.get_column_letter(len(headers))}{ws.max_row}"
+    ws.auto_filter.ref = f"A{linha}:{get_column_letter(len(headers))}{ws.max_row}"
 
 def ajustar_largura(ws):
-    for col in ws.columns:
+    # SOLUÇÃO DO BUG: Iterando pelo índice para ignorar os MergedCells com segurança
+    for col_idx in range(1, ws.max_column + 1):
+        col_letter = get_column_letter(col_idx)
         max_length = 0
-        column = col[0].column_letter
-        for cell in col:
-            try:
-                if len(str(cell.value)) > max_length: max_length = len(str(cell.value))
-            except: pass
+        for cell in ws[col_letter]:
+            # Ignora as células mescladas (MergedCell) para não dar erro de atributo
+            if type(cell).__name__ != 'MergedCell' and cell.value:
+                try:
+                    if len(str(cell.value)) > max_length: 
+                        max_length = len(str(cell.value))
+                except: pass
         adjusted_width = (max_length + 2) * 1.1
-        ws.column_dimensions[column].width = adjusted_width if adjusted_width > 15 else 15
+        ws.column_dimensions[col_letter].width = adjusted_width if adjusted_width > 15 else 15
 
 def gerar_planilha(dados):
     wb = openpyxl.Workbook()
@@ -74,7 +79,7 @@ def gerar_planilha(dados):
         
         ws_debitos.append([p['orgao'], p['tipo'], p['periodo'], v_orig, v_multa, v_juros, v_cons, p['status']])
         
-        # Formatação Visual
+        # Formatação Visual de Moeda e Cores
         for col in ['D', 'E', 'F', 'G']: ws_debitos[f"{col}{row_idx}"].number_format = FORMATO_MOEDA
         
         status_cell = ws_debitos[f"H{row_idx}"]
