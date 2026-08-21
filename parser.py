@@ -72,7 +72,9 @@ class RelatorioParser:
             if "Omissão de DCTFWeb" in linha: secao = "DCTFWEB"; continue
             if "Débito (SIEF)" in linha or "Débito com Exigibilidade Suspensa" in linha: secao = "SIEF"; continue
             if "Pendência Processo Fiscal" in linha: secao = "PROCESSO"; continue
-            if "Parcelamento com Exigibilidade Suspensa" in linha or "Pendência Parcelamento" in linha: secao = "PARCELAMENTO"; continue
+            if "Parcelamento (" in linha or "Pendência Parcelamento" in linha or "Parcelamento com Exigibilidade" in linha: 
+                secao = "PARCELAMENTO"
+                continue
             if "Diagnóstico Fiscal na Procuradoria" in linha or "Final do Relatório" in linha: secao = "FIM"
 
             if secao == "DCTFWEB":
@@ -83,17 +85,15 @@ class RelatorioParser:
                         "orgao": "RFB", "tipo": "Omissão de DCTFWeb", 
                         "periodo": f"{match.group(1)} - {', '.join(meses)}", 
                         "vl_original": "-", "multa": "-", "juros": "-", "vl_consolidado": "-", 
-                        "status": "Pendente"
+                        "status": "Pendente de Entrega"
                     })
                     secao = None 
                     
             elif secao == "SIEF":
                 periodo_match = re.search(r'(\d{2}/\d{4})', linha)
-                status_match = re.search(r'(DEVEDOR|A ANALISAR|EXIGIBILIDADE SUSPENSA)', linha)
+                status_match = re.search(r'(DEVEDOR|A ANALISAR-A VENCER|A ANALISAR|EXIGIBILIDADE SUSPENSA)', linha)
                 if periodo_match and status_match:
                     tributo = linha.split(periodo_match.group(1))[0].replace('|', '').strip()
-                    
-                    # Extração detalhada de todos os valores na linha
                     valores = re.findall(r'\d{1,3}(?:\.\d{3})*,\d{2}', linha)
                     vl_orig = valores[0] if len(valores) > 0 else "-"
                     multa = valores[2] if len(valores) >= 4 else "-"
@@ -108,7 +108,7 @@ class RelatorioParser:
                     })
 
             elif secao == "PROCESSO":
-                match = re.search(r'([\d\.\-\/]+)\s+(DEVEDOR|EM ANALISE)', linha)
+                match = re.search(r'([\d\.\-\/]+)\s+(DEVEDOR|EM ANALISE|A ANALISAR)', linha)
                 if match:
                     pendencias.append({
                         "orgao": "RFB", "tipo": f"Processo Fiscal: {match.group(1)}", 
@@ -120,15 +120,24 @@ class RelatorioParser:
                 if "Parcelamento:" in linha or "Conta" in linha:
                     num = linha.replace("Parcelamento:", "").replace("Conta", "").strip()
                     pendencias.append({
-                        "orgao": "RFB", "tipo": "Parcelamento RFB", 
-                        "periodo": num, "vl_original": "-", "multa": "-", "juros": "-", "vl_consolidado": "-", 
+                        "orgao": "RFB", "tipo": f"Parcelamento {num}", 
+                        "periodo": "-", "vl_original": "-", "multa": "-", "juros": "-", "vl_consolidado": "-", 
+                        "status": "Em Parcelamento"
+                    })
+                elif "SIMPLES NACIONAL EM PARCELAMENTO" in linha:
+                    pendencias.append({
+                        "orgao": "RFB", "tipo": "Parcelamento Simples Nacional", 
+                        "periodo": "-", "vl_original": "-", "multa": "-", "juros": "-", "vl_consolidado": "-", 
                         "status": "Em Parcelamento"
                     })
                 elif "Valor em Atraso:" in linha:
                     val_atraso = re.search(r'Valor em Atraso:\s*([\d\.,]+)', linha)
-                    if val_atraso and pendencias and pendencias[-1]["tipo"] == "Parcelamento RFB":
+                    if val_atraso and pendencias and "Parcelamento" in pendencias[-1]["tipo"]:
                         pendencias[-1]["vl_consolidado"] = val_atraso.group(1)
-                        pendencias[-1]["status"] = "Atrasado"
+                        pendencias[-1]["status"] = "Em Atraso"
+                elif "Parcelas em atraso" in linha.lower():
+                    if pendencias and "Parcelamento" in pendencias[-1]["tipo"] and pendencias[-1]["status"] != "Em Atraso":
+                        pendencias[-1]["status"] = "Com Parcelas em Atraso"
 
         return pendencias
 
@@ -141,7 +150,11 @@ class RelatorioParser:
             if secao_pgfn:
                 match_insc = re.search(r'(\d{2}\.\d\.\d{2}\.\d{6}-\d{2})\s+([A-Z0-9\-\s]+?)(?=\d{2}/)', linha)
                 if match_insc:
-                    pgfn_lista.append({"inscricao": match_insc.group(1), "tributo": match_insc.group(2).strip(), "status": "Inscrito em Dívida Ativa"})
+                    pgfn_lista.append({
+                        "inscricao": match_insc.group(1), 
+                        "tributo": match_insc.group(2).strip(), 
+                        "status": "Inscrito em Dívida Ativa"
+                    })
         return pgfn_lista
 
     def _extrair_certidoes(self):
