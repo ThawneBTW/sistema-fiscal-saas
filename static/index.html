@@ -1,86 +1,189 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SaaS | Situação Fiscal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: { primary: '#6366f1', darkbg: '#0f172a', darkcard: '#1e293b' }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .dark .glass { background: rgba(30, 41, 59, 0.7); }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-<body class="bg-slate-50 flex h-screen text-slate-800 font-sans">
+<body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300 flex h-screen overflow-hidden">
     
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r shadow-sm hidden md:block">
-        <div class="p-6 border-b text-xl font-bold text-blue-600">Fiscal.io</div>
-        <nav class="p-4 space-y-2">
-            <a href="#" class="block px-4 py-2 bg-blue-50 text-blue-700 rounded-lg font-semibold">Dashboard</a>
-            <a href="#" class="block px-4 py-2 text-slate-500 hover:bg-slate-50 rounded-lg">Empresas</a>
+    <aside class="w-64 bg-white dark:bg-darkcard border-r dark:border-slate-700 shadow-lg flex flex-col transition-colors duration-300">
+        <div class="p-6 border-b dark:border-slate-700">
+            <h1 class="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600">Fiscal.io</h1>
+        </div>
+        <nav class="p-4 space-y-3 flex-1">
+            <button onclick="mudarAba('dashboard')" id="btn-dashboard" class="w-full text-left px-4 py-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl font-bold transition-all">Dashboard</button>
+            <button onclick="mudarAba('empresas')" id="btn-empresas" class="w-full text-left px-4 py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-semibold transition-all">Empresas Salvas</button>
         </nav>
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col overflow-y-auto">
-        <header class="bg-white p-6 shadow-sm border-b flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Processador de Relatórios</h1>
+    <main class="flex-1 flex flex-col relative">
+        <!-- Topbar -->
+        <header class="glass border-b dark:border-slate-700 p-4 px-8 flex justify-between items-center sticky top-0 z-10">
+            <h2 class="text-xl font-bold" id="titulo-pagina">Processador de Relatórios</h2>
+            <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+                <span id="theme-icon" class="text-xl">🌙</span>
+            </button>
         </header>
 
-        <div class="p-8 max-w-5xl mx-auto w-full">
-            <!-- Upload Area -->
-            <div class="bg-white p-10 rounded-xl shadow-sm border-2 border-dashed border-slate-300 text-center hover:border-blue-500 transition mb-8">
-                <h2 class="text-lg font-semibold mb-2">Enviar Relatório Fiscal</h2>
-                <p class="text-slate-500 mb-6">Faça upload do PDF da Receita Federal para extração automática.</p>
-                <input type="file" id="arquivoPdf" accept=".pdf" class="hidden">
-                <button onclick="document.getElementById('arquivoPdf').click()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Selecionar PDF</button>
-                <button onclick="enviarPDF()" class="ml-2 bg-emerald-500 text-white px-6 py-2 rounded-lg hover:bg-emerald-600">Processar</button>
-            </div>
-
-            <!-- Dashboard de Resultados -->
-            <div id="resultado" class="hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xl font-bold">Resumo Extraído</h3>
-                    <a id="btnBaixar" href="#" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-emerald-700 shadow-sm">📥 Baixar Excel</a>
-                </div>
-
-                <!-- Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
-                        <p class="text-sm text-slate-500 font-medium">Razão Social</p>
-                        <p id="resRazao" class="text-lg font-bold mt-1 text-slate-700">-</p>
-                        <p id="resCnpj" class="text-sm text-slate-400 mt-1">-</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-amber-500">
-                        <p class="text-sm text-slate-500 font-medium">Pendências</p>
-                        <p id="resPendencias" class="text-2xl font-bold mt-1 text-slate-700">0</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-emerald-500">
-                        <p class="text-sm text-slate-500 font-medium">PGFN</p>
-                        <p id="resPgfn" class="text-sm font-bold mt-1 text-slate-700">-</p>
+        <div class="p-8 overflow-y-auto h-full w-full max-w-6xl mx-auto">
+            
+            <!-- TELA 1: DASHBOARD / UPLOAD -->
+            <div id="view-dashboard" class="fade-in">
+                <div class="bg-white dark:bg-darkcard p-10 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 text-center mb-8 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <h3 class="text-2xl font-bold mb-3 relative z-10">Novo Relatório</h3>
+                    <p class="text-slate-500 dark:text-slate-400 mb-8 relative z-10">Faça o upload do PDF da Receita Federal.</p>
+                    
+                    <input type="file" id="arquivoPdf" accept=".pdf" class="hidden">
+                    <div class="flex justify-center gap-4 relative z-10">
+                        <button onclick="document.getElementById('arquivoPdf').click()" class="bg-slate-800 dark:bg-slate-700 text-white px-8 py-3 rounded-xl font-semibold hover:bg-slate-700 dark:hover:bg-slate-600 transition-transform transform hover:scale-105 shadow-lg">Escolher Arquivo</button>
+                        <button onclick="enviarPDF()" id="btn-processar" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-transform transform hover:scale-105 shadow-lg flex items-center gap-2">
+                            <span>Processar Agora</span>
+                        </button>
                     </div>
                 </div>
+
+                <!-- Resultado Dinâmico -->
+                <div id="resultado" class="hidden fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-2xl font-bold">Dados Extraídos</h3>
+                        <a id="btnBaixar" href="#" class="bg-emerald-500 text-white px-6 py-2 rounded-xl font-bold hover:bg-emerald-600 shadow-lg transition-transform hover:-translate-y-1">📥 Baixar Excel</a>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-md border-l-4 border-indigo-500">
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Razão Social</p>
+                            <p id="resRazao" class="text-lg font-bold mt-2 truncate">-</p>
+                            <p id="resCnpj" class="text-sm text-indigo-500 font-mono mt-1">-</p>
+                        </div>
+                        <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-md border-l-4 border-rose-500">
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Pendências Encontradas</p>
+                            <p id="resPendencias" class="text-3xl font-black mt-2 text-rose-500">0</p>
+                        </div>
+                        <div class="bg-white dark:bg-darkcard p-6 rounded-2xl shadow-md border-l-4 border-emerald-500">
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Status PGFN</p>
+                            <p id="resPgfn" class="text-md font-bold mt-2 text-emerald-600 dark:text-emerald-400">-</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <!-- TELA 2: EMPRESAS -->
+            <div id="view-empresas" class="hidden fade-in">
+                <div class="bg-white dark:bg-darkcard rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 overflow-hidden">
+                    <div class="p-6 border-b dark:border-slate-700 flex justify-between items-center">
+                        <h3 class="text-xl font-bold">Banco de Dados</h3>
+                        <button class="text-sm bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-700">Atualizar</button>
+                    </div>
+                    <div class="p-8 text-center text-slate-500 dark:text-slate-400">
+                        <p>Aqui listaremos as empresas salvas no Supabase em breve.</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
+    <!-- Sistema de Notificação (Toast) -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 font-medium">
+        Mensagem aqui
+    </div>
+
     <script>
+        // Lógica de Abas (SPA)
+        function mudarAba(aba) {
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-empresas').classList.add('hidden');
+            document.getElementById('btn-dashboard').className = 'w-full text-left px-4 py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-semibold transition-all';
+            document.getElementById('btn-empresas').className = 'w-full text-left px-4 py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl font-semibold transition-all';
+
+            document.getElementById(`view-${aba}`).classList.remove('hidden');
+            document.getElementById(`btn-${aba}`).className = 'w-full text-left px-4 py-3 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl font-bold transition-all';
+            document.getElementById('titulo-pagina').innerText = aba === 'dashboard' ? 'Processador de Relatórios' : 'Empresas Salvas';
+        }
+
+        // Dark Mode Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.innerText = '🌙';
+            } else {
+                html.classList.add('dark');
+                icon.innerText = '☀️';
+            }
+        }
+
+        // Função de Notificação Visual
+        function showToast(msg, tipo = 'sucesso') {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.backgroundColor = tipo === 'erro' ? '#ef4444' : '#10b981';
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+
+        // Lógica de Upload Melhorada
         async function enviarPDF() {
             const input = document.getElementById('arquivoPdf');
-            if (input.files.length === 0) return alert('Selecione um PDF primeiro.');
+            const btnProcessar = document.getElementById('btn-processar');
+            
+            if (input.files.length === 0) {
+                showToast('Selecione um PDF antes de processar!', 'erro');
+                return;
+            }
+
+            btnProcessar.innerHTML = 'Processando...';
+            btnProcessar.disabled = true;
+            btnProcessar.classList.add('opacity-50', 'cursor-not-allowed');
 
             const formData = new FormData();
             formData.append('file', input.files[0]);
 
             try {
                 const response = await fetch('/upload', { method: 'POST', body: formData });
+                if (!response.ok) throw new Error('Falha no servidor');
+                
                 const json = await response.json();
                 
+                // Preencher Resultados
                 document.getElementById('resultado').classList.remove('hidden');
                 document.getElementById('resRazao').textContent = json.dados.empresa.razao_social || 'N/A';
                 document.getElementById('resCnpj').textContent = json.dados.empresa.cnpj || 'N/A';
-                document.getElementById('resPendencias').textContent = json.dados.pendencias.length;
-                document.getElementById('resPgfn').textContent = json.dados.pgfn.status;
+                document.getElementById('resPendencias').textContent = json.dados.pendencias ? json.dados.pendencias.length : 0;
+                document.getElementById('resPgfn').textContent = json.dados.pgfn ? json.dados.pgfn.status : '-';
                 
                 document.getElementById('btnBaixar').href = json.excel_url;
+                showToast('Relatório processado com sucesso!');
+                
             } catch (error) {
-                alert('Erro ao processar o arquivo.');
+                showToast('Erro ao ler o documento.', 'erro');
+                console.error(error);
+            } finally {
+                btnProcessar.innerHTML = 'Processar Agora';
+                btnProcessar.disabled = false;
+                btnProcessar.classList.remove('opacity-50', 'cursor-not-allowed');
+                input.value = ''; // Limpa o input
             }
         }
     </script>
