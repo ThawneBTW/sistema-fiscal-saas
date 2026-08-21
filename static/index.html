@@ -30,7 +30,6 @@
         }
     </script>
     <style>
-        /* Efeito Glassmorphism Premium */
         .glass-panel {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
@@ -41,8 +40,6 @@
             background: rgba(30, 41, 59, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-        
-        /* Scrollbar customizada */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -51,7 +48,6 @@
 </head>
 <body class="bg-slate-50 dark:bg-darkbg text-slate-800 dark:text-slate-200 font-sans transition-colors duration-300 flex h-screen overflow-hidden selection:bg-brand-500 selection:text-white">
     
-    <!-- Fundo abstrato sutil -->
     <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
         <div class="absolute top-1/2 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse-slow" style="animation-delay: 1.5s;"></div>
@@ -65,37 +61,20 @@
         </div>
         
         <nav class="flex-1 p-4 space-y-2 mt-4">
-            <!-- Botão Dashboard -->
-            <button onclick="mudarAba('dashboard')" id="btn-dashboard" class="w-full flex items-center p-3 md:px-4 md:py-3 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl font-bold transition-all group">
+            <button onclick="mudarAba('dashboard')" id="btn-dashboard" class="w-full flex items-center p-3 md:px-4 md:py-3 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl font-bold transition-all group shadow-sm">
                 <svg class="w-6 h-6 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                <span class="hidden md:block">Processador</span>
+                <span class="hidden md:block">Auditoria (RFB)</span>
             </button>
             
-            <!-- Botão Empresas -->
             <button onclick="mudarAba('empresas')" id="btn-empresas" class="w-full flex items-center p-3 md:px-4 md:py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl font-semibold transition-all group">
                 <svg class="w-6 h-6 md:mr-3 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                 <span class="hidden md:block group-hover:text-slate-800 dark:group-hover:text-slate-200 transition-colors">Base de Dados</span>
             </button>
         </nav>
-        
-        <!-- Perfil Bottom -->
-        <div class="p-4 border-t dark:border-slate-700/50">
-            <div class="flex items-center justify-center md:justify-start">
-                <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 border-2 border-white dark:border-slate-600 shadow-sm flex items-center justify-center">
-                    <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                </div>
-                <div class="hidden md:block ml-3">
-                    <p class="text-sm font-bold">Administrador</p>
-                    <p class="text-xs text-slate-500">Online</p>
-                </div>
-            </div>
-        </div>
     </aside>
 
     <!-- Main Content Area -->
     <main class="flex-1 flex flex-col relative z-10">
-        
-        <!-- Navbar Superior -->
         <header class="h-20 glass-panel border-b dark:border-slate-700/50 flex justify-between items-center px-8 shadow-sm">
             <h2 class="text-xl font-bold tracking-tight" id="titulo-pagina">Visão Geral</h2>
             <div class="flex items-center gap-4">
@@ -105,33 +84,27 @@
             </div>
         </header>
 
-        <!-- Container principal com Scroll -->
         <div class="p-6 md:p-10 overflow-y-auto h-full w-full max-w-7xl mx-auto">
             
             <!-- TELA 1: DASHBOARD / UPLOAD -->
             <div id="view-dashboard" class="animate-fade-in-up space-y-8">
-                
-                <!-- Card de Upload -->
                 <div class="glass-panel p-10 md:p-16 rounded-3xl shadow-xl border border-white/50 text-center relative overflow-hidden group">
-                    <!-- Detalhe decorativo no fundo do card -->
                     <div class="absolute -right-20 -top-20 w-64 h-64 bg-gradient-to-br from-brand-400/20 to-purple-400/20 rounded-full blur-3xl group-hover:scale-110 transition-transform duration-700"></div>
                     
                     <div class="relative z-10 max-w-lg mx-auto space-y-6">
                         <div class="w-20 h-20 bg-brand-50 dark:bg-brand-900/30 text-brand-600 rounded-2xl flex items-center justify-center mx-auto mb-6 transform group-hover:-translate-y-2 transition-transform duration-500 shadow-inner">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         </div>
                         
-                        <h3 class="text-3xl font-bold tracking-tight">Processar Novo Relatório</h3>
-                        <p class="text-slate-500 dark:text-slate-400 text-lg">Selecione o arquivo PDF da Receita Federal. O sistema extrairá estruturalmente todos os dados de forma inteligente.</p>
+                        <h3 class="text-3xl font-bold tracking-tight">Processamento Tributário Automático</h3>
+                        <p class="text-slate-500 dark:text-slate-400 text-lg">Selecione o PDF Fiscal. Extraímos valores detalhados (Principal, Multa, Juros) e organizamos tudo em tabelas precisas.</p>
                         
                         <input type="file" id="arquivoPdf" accept=".pdf" class="hidden">
                         
-                        <!-- Box de Ações de Arquivo -->
                         <div class="bg-white/50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700/50 backdrop-blur-sm mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            
                             <button onclick="document.getElementById('arquivoPdf').click()" class="w-full sm:w-auto px-6 py-3 rounded-xl font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 shadow-sm border border-slate-200 dark:border-slate-600 transition-all flex items-center justify-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                                Procurar Arquivo
+                                Procurar PDF
                             </button>
                             
                             <div class="flex-1 flex flex-col items-center sm:items-start overflow-hidden w-full">
@@ -139,81 +112,66 @@
                             </div>
 
                             <button onclick="enviarPDF()" id="btn-processar" class="w-full sm:w-auto bg-gradient-to-r from-brand-600 to-purple-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-brand-500/30 hover:shadow-brand-500/50 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-2">
-                                <span id="texto-btn-processar">Processar e Extrair</span>
-                                <!-- Spinner SVG (Oculto por padrão) -->
-                                <svg id="spinner" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
+                                <span id="texto-btn-processar">Auditar Relatório</span>
+                                <svg id="spinner" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Painel de Resultados (Oculto inicialmente) -->
+                <!-- Painel de Resultados -->
                 <div id="resultado" class="hidden animate-fade-in-up">
                     <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
                         <div class="flex items-center gap-3">
                             <div class="w-2 h-8 bg-emerald-500 rounded-full"></div>
-                            <h3 class="text-2xl font-bold tracking-tight">Análise Concluída</h3>
+                            <h3 class="text-2xl font-bold tracking-tight">Síntese Financeira</h3>
                         </div>
                         <a id="btnBaixar" href="#" class="bg-emerald-500 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 hover:-translate-y-1 transition-all flex items-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            Download Planilha Completa
+                            Exportar Planilha Completa
                         </a>
                     </div>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Card Empresa -->
-                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-brand-500 hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-4">
-                                <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Razão Social</p>
-                                <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            </div>
-                            <p id="resRazao" class="text-xl font-bold text-slate-800 dark:text-white line-clamp-2 leading-tight">-</p>
-                            <p id="resCnpj" class="text-sm font-mono text-brand-600 dark:text-brand-400 mt-2 bg-brand-50 dark:bg-brand-900/30 inline-block px-2 py-1 rounded-md">-</p>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-brand-500">
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Identificação</p>
+                            <p id="resRazao" class="text-xl font-bold text-slate-800 dark:text-white line-clamp-2 leading-tight mt-2">-</p>
+                            <p id="resCnpj" class="text-sm font-mono text-brand-600 dark:text-brand-400 mt-1">-</p>
                         </div>
                         
-                        <!-- Card Pendências -->
-                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-rose-500 hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-4">
-                                <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ocorrências</p>
-                                <svg class="w-5 h-5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                            </div>
-                            <div class="flex items-baseline gap-2">
-                                <p id="resPendencias" class="text-4xl font-black text-rose-500">0</p>
-                                <p class="text-sm font-medium text-slate-500">pendências</p>
+                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-amber-500">
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Registros RFB / PGFN</p>
+                            <div class="flex items-baseline gap-2 mt-2">
+                                <p id="resRfb" class="text-4xl font-black text-amber-500">0</p>
+                                <p class="text-sm font-medium text-slate-500 mr-2">Ocorrências</p>
                             </div>
                         </div>
-                        
-                        <!-- Card PGFN -->
-                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-amber-500 hover:shadow-md transition-shadow">
-                            <div class="flex items-center justify-between mb-4">
-                                <p class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status PGFN</p>
-                                <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                            </div>
-                            <p id="resPgfn" class="text-sm font-bold text-slate-700 dark:text-slate-200 mt-2 leading-relaxed">-</p>
+
+                        <div class="glass-panel p-6 rounded-2xl shadow-sm border-t-4 border-t-rose-600 col-span-1 md:col-span-2">
+                            <p class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Saldo Devedor Estimado (Atraso + Consolidado)</p>
+                            <p id="resValorTotal" class="text-4xl font-black text-rose-600 mt-2 tracking-tight">R$ 0,00</p>
+                            <p class="text-xs text-slate-400 mt-1">*Soma automática das guias e atrasos lidos no documento.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TELA 2: EMPRESAS (Placeholder bonito) -->
+            <!-- TELA 2: EMPRESAS -->
             <div id="view-empresas" class="hidden animate-fade-in-up">
                 <div class="glass-panel rounded-3xl shadow-xl overflow-hidden min-h-[60vh] flex flex-col">
                     <div class="p-6 md:px-8 border-b dark:border-slate-700/50 flex justify-between items-center bg-white/50 dark:bg-slate-800/50">
-                        <h3 class="text-xl font-bold">Banco de Dados Global</h3>
-                        <button class="bg-white dark:bg-slate-700 text-sm px-4 py-2 rounded-lg font-semibold border border-slate-200 dark:border-slate-600 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors flex items-center gap-2">
+                        <h3 class="text-xl font-bold">Banco de Dados - Supabase</h3>
+                        <button class="bg-white dark:bg-slate-700 text-sm px-4 py-2 rounded-lg font-semibold border border-slate-200 dark:border-slate-600 shadow-sm hover:bg-slate-50 transition-colors flex items-center gap-2">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                            Sincronizar
+                            Sincronizar Dados
                         </button>
                     </div>
                     <div class="flex-1 flex flex-col items-center justify-center p-12 text-center">
                         <div class="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-inner">
                             <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
                         </div>
-                        <h4 class="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">Tabela de registros estruturada</h4>
-                        <p class="text-slate-500 max-w-md">Em breve, todos os históricos processados e salvos no seu Supabase aparecerão listados aqui, prontos para gestão profissional.</p>
+                        <h4 class="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">Seus registros estão seguros</h4>
+                        <p class="text-slate-500 max-w-md">O painel de gestão visual será alimentado com os dados processados e gravados em tempo real na nuvem do Supabase.</p>
                     </div>
                 </div>
             </div>
@@ -221,30 +179,25 @@
         </div>
     </main>
 
-    <!-- Toasts (Notificações Flutuantes) -->
     <div id="toast" class="fixed bottom-6 right-6 px-6 py-4 rounded-xl shadow-2xl transform translate-y-24 opacity-0 transition-all duration-500 z-50 font-bold flex items-center gap-3 backdrop-blur-md border">
         <span id="toast-icon"></span>
         <span id="toast-msg"></span>
     </div>
 
     <script>
-        // Lógica de Abas (SPA)
         function mudarAba(aba) {
             document.getElementById('view-dashboard').classList.add('hidden');
             document.getElementById('view-empresas').classList.add('hidden');
             
-            // Reseta estilo dos botões laterais
             document.getElementById('btn-dashboard').className = 'w-full flex items-center p-3 md:px-4 md:py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl font-semibold transition-all group';
             document.getElementById('btn-empresas').className = 'w-full flex items-center p-3 md:px-4 md:py-3 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800/50 rounded-xl font-semibold transition-all group';
 
-            // Aplica estilo ativo na selecionada
             document.getElementById(`view-${aba}`).classList.remove('hidden');
             document.getElementById(`btn-${aba}`).className = 'w-full flex items-center p-3 md:px-4 md:py-3 bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 rounded-xl font-bold transition-all group shadow-sm';
             
             document.getElementById('titulo-pagina').innerText = aba === 'dashboard' ? 'Visão Geral' : 'Base de Dados';
         }
 
-        // Sistema de Dark Mode refinado
         function toggleTheme() {
             const html = document.documentElement;
             const icon = document.getElementById('theme-icon');
@@ -257,7 +210,6 @@
             }
         }
 
-        // Notificações avançadas
         function showToast(msg, tipo = 'sucesso') {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-msg');
@@ -277,7 +229,6 @@
             setTimeout(() => toast.classList.add('translate-y-24', 'opacity-0'), 4000);
         }
 
-        // Captura o evento de escolha de arquivo e atualiza o texto na tela
         const inputPdf = document.getElementById('arquivoPdf');
         const nomeArquivoBox = document.getElementById('nome-arquivo');
 
@@ -289,19 +240,14 @@
             }
         });
 
-        // O Coração do Upload - Com tratamento de erro rigoroso
         async function enviarPDF() {
-            if (inputPdf.files.length === 0) {
-                showToast('Selecione um PDF antes de clicar em processar.', 'erro');
-                return;
-            }
+            if (inputPdf.files.length === 0) return showToast('Selecione um PDF antes de processar.', 'erro');
 
             const btnProcessar = document.getElementById('btn-processar');
             const textoBtn = document.getElementById('texto-btn-processar');
             const spinner = document.getElementById('spinner');
 
-            // Ativa Loading UI
-            textoBtn.innerText = 'Extraindo Dados...';
+            textoBtn.innerText = 'Auditando...';
             spinner.classList.remove('hidden');
             btnProcessar.disabled = true;
             btnProcessar.classList.add('opacity-75', 'cursor-wait');
@@ -310,54 +256,42 @@
             formData.append('file', inputPdf.files[0]);
 
             try {
-                // Fetch explícito para garantir rota correta
-                const response = await fetch('/upload', { 
-                    method: 'POST', 
-                    body: formData 
-                });
-                
-                // Se o backend jogar um erro (ex: 500 ou 400), a gente pega aqui!
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.detail || 'Erro desconhecido no servidor.');
-                }
-                
+                const response = await fetch('/upload', { method: 'POST', body: formData });
                 const json = await response.json();
                 
-                // Preenche Resultados
+                if (json.error) throw new Error(json.error);
+
+                // Cálculo de dívida robusto
+                let dividaTotal = 0;
+                json.dados.pendencias.forEach(p => {
+                    if (p.vl_consolidado && p.vl_consolidado !== '-' && p.vl_consolidado !== 'Consultar') {
+                        let valLimpo = parseFloat(p.vl_consolidado.replace(/\./g, '').replace(',', '.'));
+                        if(!isNaN(valLimpo)) dividaTotal += valLimpo;
+                    }
+                });
+                
                 document.getElementById('resultado').classList.remove('hidden');
                 document.getElementById('resRazao').textContent = json.dados.empresa.razao_social || 'NÃO IDENTIFICADO';
-                document.getElementById('resCnpj').textContent = json.dados.empresa.cnpj || '00.000.000/0000-00';
+                document.getElementById('resCnpj').textContent = json.dados.empresa.cnpj || '-';
                 
-                const qtdPendencias = json.dados.pendencias ? json.dados.pendencias.length : 0;
-                document.getElementById('resPendencias').textContent = qtdPendencias;
+                const qtdRfb = json.dados.pendencias ? json.dados.pendencias.length : 0;
+                const qtdPgfn = json.dados.pgfn ? json.dados.pgfn.length : 0;
                 
-                // Muda a cor da pendência se tiver 0
-                if(qtdPendencias === 0) {
-                    document.getElementById('resPendencias').classList.replace('text-rose-500', 'text-emerald-500');
-                } else {
-                    document.getElementById('resPendencias').classList.replace('text-emerald-500', 'text-rose-500');
-                }
-
-                document.getElementById('resPgfn').textContent = json.dados.pgfn ? json.dados.pgfn.status : 'Não analisado';
+                document.getElementById('resRfb').textContent = qtdRfb + qtdPgfn;
+                document.getElementById('resValorTotal').textContent = dividaTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                
                 document.getElementById('btnBaixar').href = json.excel_url;
                 
-                showToast('Relatório extraído com sucesso!');
+                showToast('Auditoria e Extração concluídas!');
                 
             } catch (error) {
-                console.error("Erro capturado:", error);
-                // Exibe o erro exato na tela para você saber o que falhou
+                console.error(error);
                 showToast(`Falha: ${error.message}`, 'erro');
             } finally {
-                // Desativa Loading UI
-                textoBtn.innerText = 'Processar e Extrair';
+                textoBtn.innerText = 'Auditar Relatório';
                 spinner.classList.add('hidden');
                 btnProcessar.disabled = false;
                 btnProcessar.classList.remove('opacity-75', 'cursor-wait');
-                
-                // Limpa o input pra poder processar outro
-                inputPdf.value = ''; 
-                nomeArquivoBox.innerHTML = 'Nenhum documento anexado';
             }
         }
     </script>

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
 import os
@@ -14,49 +14,33 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 
 URL_SUPABASE = os.environ.get("SUPABASE_URL", "")
 CHAVE_SUPABASE = os.environ.get("SUPABASE_KEY", "")
-
-supabase = None
-if URL_SUPABASE and CHAVE_SUPABASE:
-    supabase = create_client(URL_SUPABASE, CHAVE_SUPABASE)
+supabase = create_client(URL_SUPABASE, CHAVE_SUPABASE) if URL_SUPABASE and CHAVE_SUPABASE else None
 
 @app.get("/", response_class=HTMLResponse)
 async def ler_index():
-    try:
+    if os.path.exists("static/index.html"):
         with open("static/index.html", "r", encoding="utf-8") as f:
             return f.read()
-    except FileNotFoundError:
-        return "Erro: Arquivo index.html não encontrado."
+    return "Erro: Interface não encontrada."
 
 @app.post("/upload")
 async def processar_pdf(file: UploadFile = File(...)):
     if not file.filename.endswith(".pdf"):
-        raise HTTPException(status_code=400, detail="Apenas arquivos PDF são aceitos.")
+        return {"error": "Formato inválido. Envie apenas PDF."}
 
-    caminho_temp = f"temp_{file.filename}"
-    
-    with open(caminho_temp, "wb") as buffer:
+    caminho = f"temp_{file.filename}"
+    with open(caminho, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
         
     try:
-        # Extrai todas as 5 partes do documento
-        leitor = RelatorioParser(caminho_temp)
+        leitor = RelatorioParser(caminho)
         dados = leitor.extrair_dados()
-        
         empresa = dados.get('empresa', {})
         pendencias = dados.get('pendencias', [])
-        socios = dados.get('socios', [])
-        certidoes = dados.get('certidoes', [])
-        pgfn = dados.get('pgfn', {})
 
-        # Salva as informações nas tabelas que você acabou de criar!
-        if supabase and 'cnpj' in empresa:
+        if supabase and empresa.get('cnpj'):
             try:
-                supabase.table("empresas").upsert({
-                    "cnpj": empresa['cnpj'],
-                    "razao_social": empresa.get('razao_social', ''),
-                    "situacao": empresa.get('situacao', '')
-                }).execute()
-
+                supabase.table("empresas").upsert({"cnpj": empresa['cnpj'], "razao_social": empresa.get('razao_social', ''), "situacao": empresa.get('situacao', '')}).execute()
                 for p in pendencias:
                     supabase.table("pendencias").insert({
                         "cnpj_empresa": empresa['cnpj'],
@@ -65,34 +49,27 @@ async def processar_pdf(file: UploadFile = File(...)):
                         "periodo": p.get('periodo', ''),
                         "status": p.get('status', 'Pendente')
                     }).execute()
-            except Exception as erro_banco:
-                print(f"Aviso do Banco: {erro_banco}")
+            except Exception as bd_err:
+                print(f"Aviso BD: {bd_err}")
 
-        # Gera o Excel passando TODAS as 5 informações (Isso resolve o bug!)
-        arquivo_excel = gerar_planilha(empresa, pendencias, socios, certidoes, pgfn)
+        arquivo_excel = gerar_planilha(dados)
         
         return {
-            "mensagem": "Processado com sucesso",
+            "sucesso": True,
             "dados": dados,
             "excel_url": f"/download/{arquivo_excel}"
         }
         
     except Exception as e:
-        # Se der erro agora, o Toast vermelho vai mostrar a mensagem EXATA!
-        erro_detalhado = traceback.format_exc()
-        print(erro_detalhado)
-        raise HTTPException(status_code=500, detail=str(e))
+        traceback.print_exc()
+        return {"error": f"Falha na extração: {str(e)}"}
         
     finally:
-        if os.path.exists(caminho_temp):
-            os.remove(caminho_temp)
+        if os.path.exists(caminho):
+            os.remove(caminho)
 
-@app.get("/download/{nome_arquivo}")
-async def baixar_excel(nome_arquivo: str):
-    if os.path.exists(nome_arquivo):
-        return FileResponse(
-            path=nome_arquivo, 
-            filename=nome_arquivo, 
-            media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
-    raise HTTPException(status_code=404, detail="Arquivo Excel não encontrado.")
+@app.get("/download/{arquivo}")
+async def baixar(arquivo: str):
+    if os.path.exists(arquivo):
+        return FileResponse(path=arquivo, filename=arquivo, media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    return {"error": "Arquivo não encontrado."}
