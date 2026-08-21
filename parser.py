@@ -10,7 +10,9 @@ class RelatorioParser:
     def _ler_pdf(self):
         with pdfplumber.open(self.caminho_pdf) as pdf:
             for pagina in pdf.pages:
-                self.texto += pagina.extract_text() + "\n"
+                texto_pagina = pagina.extract_text()
+                if texto_pagina:
+                    self.texto += texto_pagina + "\n"
 
     def extrair_dados(self):
         return {
@@ -23,43 +25,124 @@ class RelatorioParser:
 
     def _extrair_empresa(self):
         dados = {}
-        cnpj_busca = re.search(r'CNPJ:\s*([\d\.\-\/]+)\s+(.+?LTDA|.+?S\.A\.|.+?MEI)', self.texto)
-        if cnpj_busca:
-            dados['cnpj'] = cnpj_busca.group(1).strip()
-            dados['razao_social'] = cnpj_busca.group(2).strip()
-            
-        sit_busca = re.search(r'Situação:\s*([A-Z]+)', self.texto)
-        if sit_busca: dados['situacao'] = sit_busca.group(1).strip()
+        # Captura o CNPJ raiz (apenas números iniciais) e a Razão Social que vem logo em seguida
+        match_base = re.search(r'CNPJ:\s*(\d{2}\.\d{3}\.\d{3})\s+(.+)', self.texto)
+        if match_base:
+            dados['razao_social'] = match_base.group(2).strip()
+        
+        # Captura o CNPJ Completo com barra e traço
+        match_completo = re.search(r'CNPJ:\s*(\d{2}\.\d{3}\.\d{3}/\d{4}-\d{2})', self.texto)
+        if match_completo:
+            dados['cnpj'] = match_completo.group(1)
+
+        # Captura Situação isolando quebras de linha
+        sit_match = re.search(r'Situação:\s*([A-Z\s]+?)(?=\n|Natureza|CEP)', self.texto)
+        if sit_match: 
+            dados['situacao'] = sit_match.group(1).strip()
         
         porte = re.search(r'Porte da Empresa:\s*(.+)', self.texto)
-        if porte: dados['porte'] = porte.group(1).strip()
+        if porte: 
+            dados['porte'] = porte.group(1).strip()
         
         return dados
 
     def _extrair_socios(self):
         socios = []
-        if "Sócios e Administradores" in self.texto:
-            # Captura o padrão de CPF/CNPJ, Nome e Qualificação
-            matches = re.finditer(r'([\d\.\-]+)\n\s*\|\s*Nome\n(.+?)\n\s*\|\s*Qualificação\n(.+?)\n', self.texto)
-            for match in matches:
+        # Tenta capturar o padrão onde o nome desce para a linha seguinte devido à quebra de coluna
+        matches = re.finditer(r'(\d{3}\.\d{3}\.\d{3}-\d{2})\n([A-ZÀ-Ú\s]+)\n', self.texto)
+        for m in matches:
+            nome_encontrado = m.group(2).strip()
+            # Filtro de segurança para não capturar títulos soltos do PDF
+            if "CERTIDÃO" not in nome_encontrado and "CÓDIGO" not in nome_encontrado:
                 socios.append({
-                    "documento": match.group(1).strip(),
-                    "nome": match.group(2).strip(),
-                    "qualificacao": match.group(3).strip()
+                    "documento": m.group(1),
+                    "nome": nome_encontrado,
+                    "qualificacao": "SÓCIO/ADMINISTRADOR"
                 })
         return socios
 
     def _extrair_pendencias(self):
         pendencias = []
-        if "Omissão de DCTFWeb" in self.texto:
-            periodo = re.search(r'\(Período de Apuração\)\n(\d{4})\n([A-Z]{3})', self.texto)
-            if periodo:
-                pendencias.append({
-                    "orgao": "Receita Federal",
-                    "tipo": "Omissão de DCTFWeb",
-                    "periodo": f"{periodo.group(2)}/{periodo.group(1)}",
-                    "status": "Pendente"
-                })
+        linhas = self.texto.split('\n')
+        secao_atual = None
+
+        for linha in linhas:
+            linha = linha.strip()
+            if not linha:
+                continue
+
+            # 1. Identificador de Seções (Máquina de Estados)
+            if "Omissão de DCTFWeb" in linha:
+                secao_atual = "DCTFWEB"
+                continue
+            elif "Débito (SIEF)" in linha:
+                secao_atual = "SIEF_ATIVO"
+                continue
+            elif "Débito com Exigibilidade Suspensa" in linha:
+                secao_atual = "SIEF_SUSPENSO"
+                continue
+            elif "Pendência Processo Fiscal" in linha:
+                secao_atual = "PROCESSO"
+                continue
+            elif "Pendência Parcelamento" in linha:
+                secao_atual = "PARCELAMENTO"
+                continue
+            elif "Diagnóstico Fiscal na Procuradoria" in linha or "Final do Relatório" in linha:
+                secao_atual = "FIM"
+                break
+
+            # 2. Lógica de Extração baseada na Seção Atual
+            if secao_atual == "DCTFWEB":
+                match = re.search(r'(\d{4})\s+([A-Z]{3})', linha)
+                if match:
+                    pendencias.append({
+                        "orgao": "Receita Federal",
+                        "tipo": "Omissão de DCTFWeb",
+                        "periodo": f"{match.group(2)}/{match.group(1)}",
+                        "status": "Pendente"
+                    })
+                    secao_atual = None 
+
+            elif secao_atual in ["SIEF_ATIVO", "SIEF_SUSPENSO"]:
+                # Uma linha de débito SIEF sempre possui um período MM/YYYY e um status no fim
+                periodo_match = re.search(r'(\d{2}/\d{4})', linha)
+                status_match = re.search(r'(DEVEDOR|A ANALISAR|EXIGIBILIDADE SUSPENSA)', linha)
+                
+                if periodo_match and status_match:
+                    # Limpa a formatação de tabela (pipes) para isolar o tipo do tributo
+                    texto_limpo = linha.replace('|', '').strip()
+                    tipo_tributo = texto_limpo.split(periodo_match.group(1))[0].strip()
+                    
+                    pendencias.append({
+                        "orgao": "Receita Federal",
+                        "tipo": f"Débito SIEF: {tipo_tributo}",
+                        "periodo": periodo_match.group(1),
+                        "status": status_match.group(1)
+                    })
+
+            elif secao_atual == "PROCESSO":
+                # Captura processos no formato NNNNN.NNN.NNN/NNNN-NN e o respectivo status
+                match = re.search(r'([\d\.\-\/]+)\s+(DEVEDOR|EM ANALISE)', linha)
+                if match:
+                    pendencias.append({
+                        "orgao": "Receita Federal",
+                        "tipo": f"Processo Fiscal: {match.group(1)}",
+                        "periodo": "-",
+                        "status": match.group(2)
+                    })
+
+            elif secao_atual == "PARCELAMENTO":
+                # Captura dados da cobrança de parcelamento
+                if "Parcelamento:" in linha:
+                    num_parc = linha.split("Parcelamento:")[1].strip()
+                    pendencias.append({
+                        "orgao": "Receita Federal",
+                        "tipo": f"Parcelamento (Atraso): {num_parc}",
+                        "periodo": "-",
+                        "status": "Em Atraso"
+                    })
+                    secao_atual = None
+                    
         return pendencias
 
     def _extrair_certidoes(self):
@@ -77,5 +160,5 @@ class RelatorioParser:
 
     def _extrair_pgfn(self):
         if "Não foram detectadas pendências" in self.texto:
-            return {"status": "Sem pendências detectadas na PGFN", "possui_pendencias": False}
-        return {"status": "Pendências detectadas na PGFN", "possui_pendencias": True}
+            return {"status": "Sem pendências detectadas", "possui_pendencias": False}
+        return {"status": "Pendências detectadas", "possui_pendencias": True}
