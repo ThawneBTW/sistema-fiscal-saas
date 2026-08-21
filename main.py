@@ -3,16 +3,15 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse
 import os
 import shutil
+import traceback
 from supabase import create_client, Client
 from parser import RelatorioParser
 from excel import gerar_planilha
 
 app = FastAPI()
 
-# 1. Configuração para servir o visual (Frontend)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# 2. Conexão com o Banco de Dados (Supabase)
 URL_SUPABASE = os.environ.get("SUPABASE_URL", "")
 CHAVE_SUPABASE = os.environ.get("SUPABASE_KEY", "")
 
@@ -20,16 +19,14 @@ supabase = None
 if URL_SUPABASE and CHAVE_SUPABASE:
     supabase = create_client(URL_SUPABASE, CHAVE_SUPABASE)
 
-# 3. Rota principal: Carrega a interface bonita
 @app.get("/", response_class=HTMLResponse)
 async def ler_index():
     try:
         with open("static/index.html", "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        return "Erro: O arquivo static/index.html não foi encontrado. Verifique as pastas."
+        return "Erro: Arquivo index.html não encontrado."
 
-# 4. Rota de Upload: A mágica acontece aqui
 @app.post("/upload")
 async def processar_pdf(file: UploadFile = File(...)):
     if not file.filename.endswith(".pdf"):
@@ -41,7 +38,7 @@ async def processar_pdf(file: UploadFile = File(...)):
         shutil.copyfileobj(file.file, buffer)
         
     try:
-        # A. Faz a leitura do PDF
+        # Extrai todas as 5 partes do documento
         leitor = RelatorioParser(caminho_temp)
         dados = leitor.extrair_dados()
         
@@ -51,29 +48,29 @@ async def processar_pdf(file: UploadFile = File(...)):
         certidoes = dados.get('certidoes', [])
         pgfn = dados.get('pgfn', {})
 
-        # B. Salva no Banco de Dados
+        # Salva as informações nas tabelas que você acabou de criar!
         if supabase and 'cnpj' in empresa:
-            # Salva ou atualiza a empresa
-            supabase.table("empresas").upsert({
-                "cnpj": empresa['cnpj'],
-                "razao_social": empresa.get('razao_social', ''),
-                "situacao": empresa.get('situacao', '')
-            }).execute()
-
-            # Salva as pendências INDEPENDENTES
-            for p in pendencias:
-                supabase.table("pendencias").insert({
-                    "cnpj_empresa": empresa['cnpj'],
-                    "orgao": p.get('orgao', ''),
-                    "tipo": p.get('tipo', ''),
-                    "periodo": p.get('periodo', ''),
-                    "status": p.get('status', 'Pendente')
+            try:
+                supabase.table("empresas").upsert({
+                    "cnpj": empresa['cnpj'],
+                    "razao_social": empresa.get('razao_social', ''),
+                    "situacao": empresa.get('situacao', '')
                 }).execute()
 
-        # C. Gera a planilha Excel Profissional com todas as abas
+                for p in pendencias:
+                    supabase.table("pendencias").insert({
+                        "cnpj_empresa": empresa['cnpj'],
+                        "orgao": p.get('orgao', ''),
+                        "tipo": p.get('tipo', ''),
+                        "periodo": p.get('periodo', ''),
+                        "status": p.get('status', 'Pendente')
+                    }).execute()
+            except Exception as erro_banco:
+                print(f"Aviso do Banco: {erro_banco}")
+
+        # Gera o Excel passando TODAS as 5 informações (Isso resolve o bug!)
         arquivo_excel = gerar_planilha(empresa, pendencias, socios, certidoes, pgfn)
         
-        # D. Devolve tudo mastigado pro Javascript mostrar na tela
         return {
             "mensagem": "Processado com sucesso",
             "dados": dados,
@@ -81,15 +78,15 @@ async def processar_pdf(file: UploadFile = File(...)):
         }
         
     except Exception as e:
-        print(f"Erro no processamento: {e}")
-        raise HTTPException(status_code=500, detail="Erro interno ao processar o relatório.")
+        # Se der erro agora, o Toast vermelho vai mostrar a mensagem EXATA!
+        erro_detalhado = traceback.format_exc()
+        print(erro_detalhado)
+        raise HTTPException(status_code=500, detail=str(e))
         
     finally:
-        # Sempre apaga o PDF temporário para não lotar o servidor
         if os.path.exists(caminho_temp):
             os.remove(caminho_temp)
 
-# 5. Rota de Download: Entrega o arquivo Excel gerado
 @app.get("/download/{nome_arquivo}")
 async def baixar_excel(nome_arquivo: str):
     if os.path.exists(nome_arquivo):
